@@ -1,0 +1,20 @@
+---
+version: '3'
+
+services:
+  logstash: # https://www.elastic.co/guide/en/logstash/5.6/docker.html
+    image: docker.elastic.co/logstash/logstash:5.6.16
+    volumes:
+      - ./etc/logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logs-out:/data/
+    environment:
+      - XPACK_MONITORING_ENABLED=false
+    ports:
+      - "10200:10200"
+      - "9600:9600"
+  filebeat: # https://www.elastic.co/guide/en/beats/filebeat/5.6/running-on-docker.html
+    image: docker.elastic.co/beats/filebeat:5.6.16
+    volumes:
+      - ./etc/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./etc/filebeat/conf.d:/usr/share/filebeat/conf.d
+      - ./logs-in:/logs-in/

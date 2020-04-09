@@ -1,0 +1,6 @@
+filebeat:
+  prospectors:
+  - paths:
+    - "/logs-in/*"
+    fields:
+      type: system_logs
