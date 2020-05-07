@@ -12,9 +12,17 @@ services:
     ports:
       - "10200:10200"
       - "9600:9600"
+    networks:
+      - my_net
   filebeat: # https://www.elastic.co/guide/en/beats/filebeat/5.6/running-on-docker.html
-    image: docker.elastic.co/beats/filebeat:5.6.16
+    image: docker.elastic.co/beats/filebeat:6.8.2
     volumes:
       - ./etc/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - ./etc/filebeat/conf.d:/usr/share/filebeat/conf.d
       - ./logs-in:/logs-in/
+    networks:
+      - my_net
+
+networks:
+  my_net:
+    driver: bridge
