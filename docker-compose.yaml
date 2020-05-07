@@ -14,9 +14,11 @@ services:
       - "10201:10200"
       - "9601:9600"
       - "5000:5000"
+    healthcheck:
+      test: ["CMD", "nc", "-vz", "localhost", "5000"]
   logstash-5: # https://www.elastic.co/guide/en/logstash/5.6/docker.html
     #image: docker.elastic.co/logstash/logstash:5.6.16
-    image: sproutsocial/logstash:5.6.6 # Has logstash-output-lumberjack plugin baked in.
+    image: 412335208158.dkr.ecr.us-east-1.amazonaws.com/o11yp/logstash-dev:5.6.16 # Has logstash-output-lumberjack plugin baked in.
     volumes:
       - ./etc/logstash/pipeline:/usr/share/logstash/pipeline
       - ./etc/pki:/usr/share/logstash/pki
@@ -26,6 +28,8 @@ services:
     ports:
       - "10200:10200"
       - "9600:9600"
+    depends_on:
+      - logstash-7 # Needs the logstash 7 filbeat listener up before it will start.
   filebeat: # https://www.elastic.co/guide/en/beats/filebeat/5.6/running-on-docker.html
     image: docker.elastic.co/beats/filebeat:5.6.16
     volumes:
