@@ -5,7 +5,13 @@ input {
   }
 }
 
-filter {}
+filter {
+  if ![fields][type] {
+    mutate {
+      copy => { "type" => "[fields][type]" }
+    }
+  }
+}
 
 output {
   # Kubernetes filebeat forwarder has its own completely different message fields,
@@ -26,14 +32,14 @@ output {
   }
   else {
     file {
-      path => "/data/by-host/%{host}/%{type}.%{+yyyy.MM.dd}"
+      path => "/data/by-host/%{[beat][hostname]}/%{[fields][type]}.%{+yyyy.MM.dd}"
       # Only log the message payload, not what server it's on
       codec => line { format => "%{message}"}
     }
     file {
-      path => "/data/by-service/%{type}/%{+yyyy.MM.dd}"
+      path => "/data/by-service/%{[fields][type]}/%{+yyyy.MM.dd}"
       # Log the timestamp, server, and the message body
-      codec => line { format => "%{@timestamp} %{host} %{message}"}
+      codec => line { format => "%{@timestamp} %{[beat][hostname]} %{message}"}
     }
   }
 }
