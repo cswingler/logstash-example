@@ -6,7 +6,7 @@ logging.level: debug
 output:
   logstash:
     enable: 'true'
-    hosts: logstash:10200
+    hosts: logstash-5:10200
     index: filebeat
     tls:
       insecure: 'true'

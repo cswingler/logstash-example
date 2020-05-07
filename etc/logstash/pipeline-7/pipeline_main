@@ -3,18 +3,20 @@ input {
   beats {
     port => 10200
   }
+
+  # Accept Filebeat/TLS on port 5000 
+  beats {
+    port => 5000
+    codec => json
+    ssl => true
+    ssl_certificate => "/usr/share/logstash/pki/lumberjack.cert"
+    ssl_key => "/usr/share/logstash/pki/lumberjack.key"
+  }
 }
 
 filter {}
 
 output {
-  # Send all our messages to our FB-7 node:
-  lumberjack {
-    codec => json
-    hosts => "logstash-7"
-    ssl_certificate => "/usr/share/logstash/pki/lumberjack.cert"
-    port => 5000
-  }
   # Kubernetes filebeat forwarder has its own completely different message fields,
   # which means we have to pick completely different attributes off of it in order to
   # make reasonable-looking logs
