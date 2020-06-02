@@ -10,12 +10,11 @@ services:
       - ./logs-out-7:/data/
     environment:
       - XPACK_MONITORING_ENABLED=false
+      - PIPELINE_WORKERS=1
     ports:
       - "10201:10200"
       - "9601:9600"
       - "5000:5000"
-    healthcheck:
-      test: ["CMD", "nc", "-vz", "localhost", "5000"]
   logstash-5: # https://www.elastic.co/guide/en/logstash/5.6/docker.html
     #image: docker.elastic.co/logstash/logstash:5.6.16
     image: 412335208158.dkr.ecr.us-east-1.amazonaws.com/o11yp/logstash-dev:5.6.16 # Has logstash-output-lumberjack plugin baked in.
@@ -37,4 +36,10 @@ services:
       - ./etc/filebeat/conf.d:/usr/share/filebeat/conf.d
       - ./etc/pki:/usr/share/logstash/pki
       - ./logs-in:/logs-in/
-
+  filebeat-7:
+    image: docker.elastic.co/beats/filebeat:7.7.0
+    volumes:
+      - ./etc/filebeat7/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./etc/filebeat7/conf.d:/usr/share/filebeat/conf.d
+      - ./logs-in:/logs-in/
+      - ./etc/pki:/usr/share/logstash/pki

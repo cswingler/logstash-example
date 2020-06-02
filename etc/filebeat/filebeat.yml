@@ -2,11 +2,10 @@ filebeat:
   prospectors: []
   registry_file: "/tmp/filebeat/registry"
   config_dir: "/usr/share/filebeat/conf.d"
-logging.level: debug
 output:
   logstash:
     enable: 'true'
-    hosts: logstash-5:10200
+    hosts: logstash-7:10200
     index: filebeat
     tls:
       insecure: 'true'
