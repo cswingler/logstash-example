@@ -1,0 +1,6 @@
+filebeat:
+  inputs:
+  - paths:
+    - "/logs-in/*"
+    fields:
+      type: system_logs

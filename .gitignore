@@ -1,3 +1,4 @@
 **/*.log
-logs-out/**
-logs-in/**
+logs-out-*/**
+logs-in-*/**
+**/.DS_Store

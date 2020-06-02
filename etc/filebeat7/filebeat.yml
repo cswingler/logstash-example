@@ -1,0 +1,10 @@
+filebeat:
+  config_dir: "/usr/share/filebeat/conf.d"
+http.enabled: true
+output:
+  logstash:
+    enable: 'true'
+    hosts: logstash-7:10200
+    index: filebeat
+    tls:
+      insecure: 'true'
