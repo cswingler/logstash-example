@@ -27,26 +27,30 @@ output {
   }
   if [kubernetes] {
     file {
-      path => "/data/kubernetes/%{[kubernetes][container][name]}/%{+yyyy.MM.dd}.%{[kubernetes][pod][name]}"
+      path => "/data/kubernetes/%{[kubernetes][container][name]}/%{+yyyy.MM.dd}.%{[kubernetes][pod][name]}.gz"
       # Only log the message payload, not what server it's on
       codec => line { format => "%{log}"}
+      gzip => true
       }
     file {
-      path => "/data/by-service/%{[kubernetes][container][name]}/%{+yyyy.MM.dd}"
+      path => "/data/by-service/%{[kubernetes][container][name]}/%{+yyyy.MM.dd}.gz"
       # Log the timestamp, server, and the message body
       codec => line { format => "%{@timestamp} %{[kubernetes][pod][name]} %{log}"}
+      gzip => true
     }
   }
   else {
     file {
-      path => "/data/by-host/%{host}/%{type}.%{+yyyy.MM.dd}"
+      path => "/data/by-host/%{host}/%{type}.%{+yyyy.MM.dd}.gz"
       # Only log the message payload, not what server it's on
       codec => line { format => "%{message}"}
+      gzip => true
     }
     file {
-      path => "/data/by-service/%{type}/%{+yyyy.MM.dd}"
+      path => "/data/by-service/%{type}/%{+yyyy.MM.dd}.gz"
       # Log the timestamp, server, and the message body
       codec => line { format => "%{@timestamp} %{host} %{message}"}
+      gzip => true
     }
   }
 }
