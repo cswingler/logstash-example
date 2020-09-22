@@ -1,0 +1,16 @@
+input {
+  # Note: This input will start listeners on both TCP and UDP, but
+  # Using 1514 to not need privs.
+  syslog {
+    port => 1514
+  }
+}
+
+filter {}
+
+output {
+  file { 
+    path => "/data/raw.log"
+    codec => "json_lines"
+  }
+}

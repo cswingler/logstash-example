@@ -4,7 +4,7 @@ http.enabled: true
 output:
   logstash:
     enable: 'true'
-    hosts: logstash-7:10200
+    hosts: logstash-main:10200
     index: filebeat
     tls:
       insecure: 'true'

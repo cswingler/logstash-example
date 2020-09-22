@@ -2,40 +2,60 @@
 version: '3'
 
 services:
-  logstash-7: # https://www.elastic.co/guide/en/logstash/5.6/docker.html
-    image: docker.elastic.co/logstash/logstash:7.6.2
+  logstash-main:
+    build: . # Need to add logstash-output-syslog
     volumes:
-      - ./etc/logstash/pipeline-7:/usr/share/logstash/pipeline
+      - ./etc/logstash/config-main/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./etc/logstash/pipeline-main:/usr/share/logstash/pipeline
       - ./etc/pki:/usr/share/logstash/pki
-      - ./logs-out-7:/data/
-    environment:
-      - XPACK_MONITORING_ENABLED=false
-      - PIPELINE_WORKERS=1
+      - ./logs-out/main:/data/
+      - ./pq:/pq
     ports:
       - "10201:10200"
       - "9601:9600"
       - "5000:5000"
-  logstash-5: # https://www.elastic.co/guide/en/logstash/5.6/docker.html
-    #image: docker.elastic.co/logstash/logstash:5.6.16
-    image: 412335208158.dkr.ecr.us-east-1.amazonaws.com/o11yp/logstash-dev:5.6.16 # Has logstash-output-lumberjack plugin baked in.
+  logstash-fb:
+    image: docker.elastic.co/logstash/logstash:7.6.2
     volumes:
-      - ./etc/logstash/pipeline:/usr/share/logstash/pipeline
+      - ./etc/logstash/pipeline-fb:/usr/share/logstash/pipeline
       - ./etc/pki:/usr/share/logstash/pki
-      - ./logs-out-5:/data/
+      - ./logs-out/beats-back:/data/
     environment:
       - XPACK_MONITORING_ENABLED=false
+      - PIPELINE_WORKERS=1
     ports:
-      - "10200:10200"
-      - "9600:9600"
-    depends_on:
-      - logstash-7 # Needs the logstash 7 filbeat listener up before it will start.
-  filebeat: # https://www.elastic.co/guide/en/beats/filebeat/5.6/running-on-docker.html
-    image: docker.elastic.co/beats/filebeat:5.6.16
+      - "10202:10200"
+      - "9602:9600"
+      - "5001:5000"
+  logstash-syslog-tcp:
+    image: docker.elastic.co/logstash/logstash:7.6.2
     volumes:
-      - ./etc/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - ./etc/filebeat/conf.d:/usr/share/filebeat/conf.d
+      - ./etc/logstash/pipeline-syslog-tcp:/usr/share/logstash/pipeline
       - ./etc/pki:/usr/share/logstash/pki
-      - ./logs-in:/logs-in/
+      - ./logs-out/syslog-tcp-back:/data/
+    environment:
+      - XPACK_MONITORING_ENABLED=false
+      - PIPELINE_WORKERS=1
+    ports:
+      - "10203:10200"
+      - "9603:9600"
+      - "5003:5000"
+      - "5141:1514"
+  logstash-syslog-udp:
+    image: docker.elastic.co/logstash/logstash:7.6.2
+    volumes:
+      # This can use the same config file as the tcp, the setups are identical
+      - ./etc/logstash/pipeline-syslog-tcp:/usr/share/logstash/pipeline
+      - ./etc/pki:/usr/share/logstash/pki
+      - ./logs-out/syslog-udp-back:/data/ # This is the only real diff.
+    environment:
+      - XPACK_MONITORING_ENABLED=false
+      - PIPELINE_WORKERS=1
+    ports:
+      - "10204:10200"
+      - "9604:9600"
+      - "5004:5000"
+      - "5142:1514"
   filebeat-7:
     image: docker.elastic.co/beats/filebeat:7.7.0
     volumes:

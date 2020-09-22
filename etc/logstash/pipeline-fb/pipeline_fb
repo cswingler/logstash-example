@@ -1,0 +1,28 @@
+input {
+  # This is the main Beats input:
+  beats {
+    port => 10200
+  }
+
+  # Accept Filebeat/TLS on port 5000 
+  beats {
+    port => 5000
+    codec => json
+    ssl => true
+    ssl_certificate => "/usr/share/logstash/pki/lumberjack.cert"
+    ssl_key => "/usr/share/logstash/pki/lumberjack.key"
+  }
+}
+
+filter {}
+
+output {
+  # Kubernetes filebeat forwarder has its own completely different message fields,
+  # which means we have to pick completely different attributes off of it in order to
+  # make reasonable-looking logs
+  # Luckily, we can also identify kubernetes messages by the "kubernetes" top-level attribute
+  file { 
+    path => "/data/raw.log"
+    codec => "json_lines"
+  }
+}

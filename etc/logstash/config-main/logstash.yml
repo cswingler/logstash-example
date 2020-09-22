@@ -1,0 +1,11 @@
+# This is the main logstash config used on the main instance. The others are 
+# set up with 
+http.host: 0.0.0.0
+pipeline.workers: 1
+xpack.monitoring.elasticsearch.hosts:
+- http://elasticsearch:9200
+xpack.monitoring.enabled: false
+queue.type: persisted
+path.queue: /pq
+# Setting this to tiny so we can reproduce a full queue event easier
+queue.max_events: 1000
